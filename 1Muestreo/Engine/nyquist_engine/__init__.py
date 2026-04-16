@@ -10,5 +10,7 @@ _build_dir = _project_root / "Engine" / "nyquist_engine"
 
 if str(_build_dir) not in sys.path:
     sys.path.insert(0, str(_build_dir))
+    
+print(f"Added to sys.path: {_build_dir}")
 
 from nyquist_core import compute_nyquist_simulation
