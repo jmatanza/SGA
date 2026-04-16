@@ -11,11 +11,18 @@ try:
 except Exception:
     colab_output = None
 
-PACKAGE_ROOT = PROJECT_ROOT / ("Engine" if IN_COLAB else "src")
+# Binder/Colab and local: prefer Engine (pre-built .so); fall back to src
+_engine_root = PROJECT_ROOT / "Engine"
+_src_root = PROJECT_ROOT / "src"
+if IN_COLAB or _engine_root.exists():
+    PACKAGE_ROOT = _engine_root
+else:
+    PACKAGE_ROOT = _src_root
 
 if str(PACKAGE_ROOT) not in sys.path:
     sys.path.insert(0, str(PACKAGE_ROOT))
 
+import asyncio
 import threading
 from io import BytesIO
 
@@ -263,7 +270,19 @@ def push_history(iteration, snr_db, ber_value, packet_ok, availability_window):
         sim_state['packet_ok_window'] = []
 
 
+async def _async_loop():
+    while sim_state['running']:
+        try:
+            run_one_step()
+        except Exception as exc:
+            sim_state['running'] = False
+            status.value = f"<b>Status:</b> error | {type(exc).__name__}: {exc}"
+            return
+        await asyncio.sleep(1.0)
+
+
 def schedule_next():
+    # kept for compatibility; not used in async mode
     if not sim_state['running'] or IN_COLAB:
         return
     timer = threading.Timer(1.0, tick)
@@ -347,7 +366,7 @@ def on_start(_):
             }, 1000);
         """)
     else:
-        tick()
+        asyncio.ensure_future(_async_loop())
 
 
 def on_stop(_):
@@ -362,7 +381,8 @@ def on_stop(_):
             """)
         except Exception:
             pass
-    timer = sim_state['timer']
+    # cancel any lingering threading.Timer (fallback path)
+    timer = sim_state.get('timer')
     if timer is not None:
         timer.cancel()
         sim_state['timer'] = None
