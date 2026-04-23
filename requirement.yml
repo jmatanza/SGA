@@ -11,3 +11,4 @@ dependencies:
   - pip
   - pip:
       - ipywidgets==8.1.7
+      - .
