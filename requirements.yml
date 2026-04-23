@@ -1,0 +1,13 @@
+name: SGA-env
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10
+  - cython=3.2.4
+  - numpy=1.26.4
+  - matplotlib=3.8.4
+  - pip
+  - pip:
+      - ipywidgets==8.1.7
