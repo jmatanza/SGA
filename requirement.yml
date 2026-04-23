@@ -8,7 +8,7 @@ dependencies:
   - cython=3.2.4
   - numpy=1.26.4
   - matplotlib=3.8.4
+  - ipywidgets=8.1.7
+  - notebook
+  - jupyterlab
   - pip
-  - pip:
-      - ipywidgets==8.1.7
-      - .
