@@ -5,10 +5,8 @@ channels:
 
 dependencies:
   - python=3.10
-  - cython=3.2.4
   - numpy=1.26.4
   - matplotlib=3.8.4
   - ipywidgets=8.1.7
   - notebook
   - jupyterlab
-  - pip
